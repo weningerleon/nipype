@@ -340,7 +340,7 @@ jobs:
           working_directory: /home/circleci/nipype
           command: |
             tools/retry_cmd.sh -n 2 -s 1 \
-              "echo LOOP && exit 2"
+              echo LOOP "&&" exit 2
 
   expected_failure_machine:
     machine: *machine_kwds
@@ -352,7 +352,7 @@ jobs:
           working_directory: /home/circleci/nipype
           command: |
             tools/retry_cmd.sh -n 2 -s 1 \
-              "echo LOOP && exit 2"
+              echo LOOP "&&" exit 2
 
 workflows:
   version: 2
