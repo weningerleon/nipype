@@ -330,30 +330,20 @@ jobs:
             - /tmp/docker/cache/Dockerfile.base-pruned
           key: dockerfile-cache-v1-{{ .Branch }}-{{ checksum "/tmp/docker/cache/Dockerfile.base-pruned" }}
 
+  expected_failure:
+    docker:
+      - image: docker:17.10.0-ce-git
+    steps:
+      - checkout:
+          path: /home/circleci/nipype
+      - run:
+          working_directory: /home/circleci/nipype
+          command: |
+            tools/retry_cmd.sh -n 2 -s 1 \
+              "echo LOOP && exit 2"
 
 workflows:
   version: 2
-  build_test_deploy:
+  fail_it:
     jobs:
-      - compare_base_dockerfiles
-      - test_pytest:
-          requires:
-            - compare_base_dockerfiles
-      - test_py3_fmri_fsl_spm:
-          requires:
-            - compare_base_dockerfiles
-      - test_py3_fmri_spm_dartel_multiproc:
-          requires:
-            - compare_base_dockerfiles
-      - test_fmri_spm_nested_fsl_feeds:
-          requires:
-            - compare_base_dockerfiles
-      - deploy:
-          filters:
-            branches:
-              only: master
-          requires:
-            - test_pytest
-            - test_fmri_spm_nested_fsl_feeds
-            - test_py3_fmri_fsl_spm
-            - test_py3_fmri_spm_dartel_multiproc
+      - expected_failure
