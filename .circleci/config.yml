@@ -330,9 +330,21 @@ jobs:
             - /tmp/docker/cache/Dockerfile.base-pruned
           key: dockerfile-cache-v1-{{ .Branch }}-{{ checksum "/tmp/docker/cache/Dockerfile.base-pruned" }}
 
-  expected_failure:
+  expected_failure_docker:
     docker:
       - image: docker:17.10.0-ce-git
+    steps:
+      - checkout:
+          path: /home/circleci/nipype
+      - run:
+          working_directory: /home/circleci/nipype
+          command: |
+            tools/retry_cmd.sh -n 2 -s 1 \
+              "echo LOOP && exit 2"
+
+  expected_failure_machine:
+    machine: *machine_kwds
+    working_directory: /home/circleci/nipype
     steps:
       - checkout:
           path: /home/circleci/nipype
@@ -346,4 +358,5 @@ workflows:
   version: 2
   fail_it:
     jobs:
-      - expected_failure
+      - expected_failure_docker
+      - expected_failure_machine
